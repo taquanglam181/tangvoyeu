@@ -6,9 +6,9 @@
 // --- 1. LỜI CHÚC Ý NGHĨA DÀNH CHO VỢ ---
 const WISH_MESSAGE = `Chúc mừng ngày 20-10, người phụ nữ đặc biệt và tuyệt vời nhất trong cuộc đời anh!
 
-Cảm ơn em vì đã luôn đồng hành, thấu hiểu và mang đến cho tổ ấm nhỏ của chúng mình ngập tràn tiếng cười, sự dịu dàng và yêu thương.
+Cảm ơn em vì đã luôn đồng hành và mang đến cho tổ ấm nhỏ của chúng mình ngập tràn tiếng cười, sự dịu dàng và yêu thương.
 
-Nhân ngày Phụ nữ Việt Nam, chúc vợ yêu luôn rạng ngời xinh đẹp, bình an, hạnh phúc và thành công với mọi ước mơ. Anh sẽ luôn là điểm tựa vững chắc để che chở và cùng em bước tiếp trên mọi chặng đường.
+Nhân ngày Phụ nữ Việt Nam, chúc vợ yêu luôn rạng ngời xinh đẹp, bình an, hạnh phúc và thành công với mọi ước mơ.
 
 Yêu em nhiều hơn mỗi ngày!`;
 
