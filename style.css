@@ -1,0 +1,598 @@
+:root {
+  --primary-rose: #d61a46;
+  --velvet-red: #b80c34;
+  --soft-pink: #fce8ee;
+  --gold-accent: #f0c05a;
+  --bg-gradient: radial-gradient(circle at center, #1f0511 0%, #12020a 70%, #080004 100%);
+  --card-bg: rgba(24, 6, 15, 0.9);
+  --card-border: rgba(255, 255, 255, 0.12);
+  --font-title: 'Playfair Display', serif;
+  --font-script: 'Dancing Script', cursive;
+  --font-body: 'Montserrat', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: var(--bg-gradient);
+  color: #fff;
+  font-family: var(--font-body);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Canvas 2D nền phẳng */
+#canvas-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* THANH ĐIỀU KHIỂN NHẠC FLAT & MINIMAL */
+.music-control-panel {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.audio-toggle, .music-upload-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 8px 18px;
+  border-radius: 40px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--soft-pink);
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.audio-toggle:hover, .music-upload-btn:hover {
+  background: rgba(214, 26, 70, 0.25);
+  border-color: rgba(214, 26, 70, 0.5);
+  color: #fff;
+}
+
+.svg-icon {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.audio-toggle.playing .svg-icon {
+  animation: pulseIcon 1.4s infinite ease-in-out;
+}
+
+@keyframes pulseIcon {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); color: var(--gold-accent); }
+}
+
+/* GIAI ĐOẠN 1: BÔNG HOA HỒNG THẬT & HƯỚNG DẪN PHẲNG MINIMAL */
+.scene-initial {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+  padding: 24px;
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.scene-initial.fade-out {
+  opacity: 0;
+  transform: scale(1.05);
+  pointer-events: none;
+}
+
+.rose-stage {
+  position: relative;
+  width: 320px;
+  height: 380px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.rose-stage:hover {
+  transform: scale(1.02);
+}
+
+/* Ánh sáng nền phẳng dịu nhẹ */
+.flat-glow {
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(214, 26, 70, 0.35) 0%, transparent 70%);
+  pointer-events: none;
+  animation: glowPulseFlat 3s infinite ease-in-out;
+}
+
+@keyframes glowPulseFlat {
+  0%, 100% { transform: scale(0.95); opacity: 0.7; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+/* Khung tròn phẳng chứa ảnh hoa hồng thật */
+.rose-frame-flat {
+  position: relative;
+  width: 270px;
+  height: 270px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: #110207;
+  animation: roseAppearFlat 1.2s ease-out forwards;
+}
+
+@keyframes roseAppearFlat {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.real-rose-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.4s ease;
+}
+
+.rose-stage:hover .real-rose-img {
+  transform: scale(1.05);
+}
+
+/* Vòng viền trang trí minimal mảnh mai */
+.minimal-circle-accent {
+  position: absolute;
+  width: 290px;
+  height: 290px;
+  border-radius: 50%;
+  border: 1px dashed rgba(240, 192, 90, 0.4);
+  pointer-events: none;
+  animation: rotateCircle 30s linear infinite;
+}
+
+@keyframes rotateCircle {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* HƯỚNG DẪN CLICK PHONG CÁCH FLAT MINIMAL */
+.hint-box {
+  margin-top: 24px;
+  text-align: center;
+  opacity: 0;
+  animation: fadeInFlat 0.8s 1s forwards;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+@keyframes fadeInFlat {
+  to { opacity: 1; }
+}
+
+/* Icon chạm tay 2D phẳng */
+.touch-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--soft-pink);
+  animation: bounceTouch 1.5s infinite ease-in-out;
+}
+
+.touch-svg {
+  width: 22px;
+  height: 22px;
+}
+
+@keyframes bounceTouch {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.hint-title {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 1.25rem;
+  color: #fff;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.star-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--gold-accent);
+  display: inline-block;
+  animation: spinStar 6s linear infinite;
+}
+
+@keyframes spinStar {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.hint-sub {
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 300;
+}
+
+/* HIỆU ỨNG HOA NỞ PHẲNG KHI CLICK */
+.rose-stage.blooming {
+  animation: flatBloom 0.8s ease-out forwards;
+}
+
+@keyframes flatBloom {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% {
+    transform: scale(2.0);
+    opacity: 0;
+  }
+}
+
+/* GIAI ĐOẠN 2: THIỆP & LỜI CHÚC FLAT MINIMAL */
+.scene-wishes {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  z-index: 20;
+  display: none;
+  opacity: 0;
+  justify-content: center;
+  align-items: center;
+  padding: 50px 20px;
+  transition: opacity 0.7s ease;
+}
+
+.scene-wishes.active {
+  display: flex;
+  opacity: 1;
+}
+
+.card-wrapper {
+  position: relative;
+  max-width: 640px;
+  width: 100%;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  padding: 44px 34px 34px;
+  transform: translateY(24px);
+  animation: cardRiseFlat 0.7s 0.1s ease-out forwards;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+@keyframes cardRiseFlat {
+  to { transform: translateY(0); }
+}
+
+.card-header-badge {
+  position: absolute;
+  top: -14px;
+  background: #d61a46;
+  padding: 5px 20px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Khung ảnh của vợ - Thiết kế phẳng, viền vàng mảnh */
+.photo-section {
+  margin: 15px 0 22px;
+  position: relative;
+}
+
+.photo-frame-outer {
+  position: relative;
+  width: 155px;
+  height: 155px;
+  border-radius: 50%;
+  padding: 3px;
+  border: 1.5px solid var(--gold-accent);
+  cursor: pointer;
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+.photo-frame-outer:hover {
+  transform: scale(1.03);
+  border-color: #fff;
+}
+
+.photo-frame-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  background: #111;
+}
+
+#wife-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.photo-change-hint {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 0.72rem;
+  padding: 4px 0 7px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.camera-svg {
+  width: 13px;
+  height: 13px;
+}
+
+.photo-frame-outer:hover .photo-change-hint {
+  opacity: 1;
+}
+
+/* Tiêu đề & Lời chúc phẳng thanh nhã */
+.wishes-content {
+  width: 100%;
+}
+
+.main-title {
+  font-family: var(--font-title);
+  font-size: 2.1rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.title-heart {
+  width: 26px;
+  height: 26px;
+  color: var(--primary-rose);
+  display: inline-block;
+}
+
+.sub-greeting {
+  font-family: var(--font-script);
+  font-size: 1.55rem;
+  color: var(--soft-pink);
+  margin-bottom: 22px;
+  font-weight: normal;
+}
+
+.letter-box {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 24px 22px;
+  margin-bottom: 24px;
+  min-height: 145px;
+  text-align: left;
+}
+
+.typewriter-text {
+  font-size: 1.02rem;
+  line-height: 1.85;
+  color: #fce8ee;
+  white-space: pre-line;
+  position: relative;
+  font-weight: 400;
+}
+
+.typewriter-text::after {
+  content: '|';
+  color: var(--primary-rose);
+  animation: blinkCursor 0.8s infinite;
+  margin-left: 2px;
+}
+
+.typewriter-text.done::after {
+  display: none;
+}
+
+@keyframes blinkCursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.signature {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-bottom: 28px;
+  padding-right: 8px;
+}
+
+.sign-tag {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+.sign-name {
+  font-family: var(--font-script);
+  font-size: 1.8rem;
+  color: var(--gold-accent);
+}
+
+/* Nút bấm phẳng Minimal */
+.card-actions {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  border: none;
+  outline: none;
+  padding: 11px 24px;
+  border-radius: 30px;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+
+.btn-love {
+  background: var(--primary-rose);
+  color: #fff;
+}
+
+.btn-love:hover {
+  background: #ea2552;
+  transform: translateY(-2px);
+}
+
+.btn-replay {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--soft-pink);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.btn-replay:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .music-control-panel {
+    top: 15px;
+    right: 15px;
+    gap: 8px;
+  }
+  
+  .audio-toggle, .music-upload-btn {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+
+  .rose-stage {
+    width: 280px;
+    height: 340px;
+  }
+
+  .rose-frame-flat {
+    width: 220px;
+    height: 220px;
+  }
+
+  .minimal-circle-accent {
+    width: 236px;
+    height: 236px;
+  }
+  
+  .hint-title {
+    font-size: 1.15rem;
+  }
+  
+  .card-wrapper {
+    padding: 34px 18px 24px;
+    border-radius: 20px;
+  }
+  
+  .photo-frame-outer {
+    width: 135px;
+    height: 135px;
+  }
+  
+  .main-title {
+    font-size: 1.65rem;
+  }
+  
+  .sub-greeting {
+    font-size: 1.35rem;
+  }
+  
+  .typewriter-text {
+    font-size: 0.95rem;
+    line-height: 1.75;
+  }
+  
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
